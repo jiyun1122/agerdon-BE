@@ -13,6 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -34,33 +39,60 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. CSRF 방어 비활성화 (REST API는 세션을 쓰지 않으므로 끕니다)
+                // 1. CSRF 방어 비활성화 (REST API 환경)
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 2. CORS 기본 설정 (나중에 프론트엔드 연결 시 필요에 맞게 수정)
-                .cors(cors -> cors.configure(http))
+                // 2. ★ CORS 상세 세팅 연동 (아래 생성한 Bean 메서드 조인) ★
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // 3. 세션을 절대 생성하거나 사용하지 않음 (JWT 기반 Stateless 상태 유지)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 3. 무상태(Stateless) 세션 정책 설정
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
-                // 4. API별 접근 권한 설정
+                // 4. API 인증 및 인가 가드레일 설정
                 .authorizeHttpRequests(auth -> auth
-                        // 회원가입, 로그인은 토큰 없이 누구나 접근 가능하도록 허용
-                        .requestMatchers("/api/v1/auth/**")
-                        .permitAll()
-                        .requestMatchers("/v3/api-docs",
+                        // 회원가입, 로그인은 프리패스
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        // 스웨거 UI 및 OpenAPI 명세서 리소스 완전 개방
+                        .requestMatchers(
+                                "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html")
-                        .permitAll()
-                        // 그 외 모든 API 요청은 인증(JWT)이 필요함
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        // 그 외 나머지 도메인 API는 무조건 JWT 검증 필요
                         .anyRequest().authenticated()
                 )
 
-                // 5. 우리가 만든 JWT 필터를 시큐리티 기본 인증 필터(UsernamePasswordAuthenticationFilter) 앞에 끼워 넣음
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService),
-                        UsernamePasswordAuthenticationFilter.class);
+                // 5. JWT 커스텀 인증 필터를 아이디/비번 검증 필터 앞에 배치
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService),
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
+    }
+
+    // 새 도메인 mutsasession7.store CORS 설정
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://mutsasession7.store",
+                "https://mutsasession7.store",
+                "http://www.mutsasession7.store",
+                "https://www.mutsasession7.store"
+        ));
+
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // JWT 헤더나 쿠키 인증 교환 필수 옵션
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
