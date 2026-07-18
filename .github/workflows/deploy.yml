@@ -49,8 +49,8 @@ jobs:
             docker run -d \
               --name my-spring-app \
               -p 80:8080 \
-              --network bridge \
-              -e DB_PASSWORD='${{ secrets.DB_PASSWORD }}' \
+              --network="host" \
+              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
               ${{ secrets.DOCKER_USERNAME }}/football-app:latest
 
             docker image prune -f
