@@ -46,7 +46,7 @@ public class SecurityConfig {
                 // 4. API별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         // 회원가입, 로그인은 토큰 없이 누구나 접근 가능하도록 허용
-                        .requestMatchers("/api/v1/members/signup", "/api/v1/members/login").permitAll()
+                        .requestMatchers("/api/v1/**").permitAll()
                         // 그 외 모든 API 요청은 인증(JWT)이 필요함
                         .anyRequest().authenticated()
                 )
