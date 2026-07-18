@@ -48,8 +48,8 @@ jobs:
             
             docker run -d \
               --name my-spring-app \
-              -p 80:8080 \
-              --network="host" \
+              -p 8080:8080 \
+              --network football-network \
               -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
               ${{ secrets.DOCKER_USERNAME }}/football-app:latest
 
