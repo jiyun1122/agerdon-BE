@@ -6,10 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,6 +66,27 @@ public class GlobalExceptionHandler {
                 .filter(errorMessage -> errorMessage != null)
                 .collect(Collectors.joining(", "));
         return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE, message);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingRequestParameter(
+            MissingServletRequestParameterException exception
+    ) {
+        String message = exception.getParameterName() + ": 필수 요청 파라미터입니다.";
+        return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE, message);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(
+            MethodArgumentTypeMismatchException exception
+    ) {
+        String message = exception.getName() + ": 올바른 형식의 값을 입력해주세요.";
+        return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE, message);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound() {
+        return createErrorResponse(ErrorCode.RESOURCE_NOT_FOUND);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

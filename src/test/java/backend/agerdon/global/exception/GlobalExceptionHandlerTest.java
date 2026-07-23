@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -55,6 +56,22 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.message").value(ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
     }
 
+    @Test
+    void missingRequestParameterReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/test/parameter"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.message").value("line: 필수 요청 파라미터입니다."));
+    }
+
+    @Test
+    void invalidRequestParameterTypeReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/test/parameter").param("line", "not-a-number"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.message").value("line: 올바른 형식의 값을 입력해주세요."));
+    }
+
     @RestController
     private static class TestController {
 
@@ -70,6 +87,10 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/unexpected")
         void unexpectedException() {
             throw new IllegalStateException("클라이언트에 노출되면 안 되는 내부 메시지");
+        }
+
+        @GetMapping("/test/parameter")
+        void requestParameter(@RequestParam int line) {
         }
     }
 

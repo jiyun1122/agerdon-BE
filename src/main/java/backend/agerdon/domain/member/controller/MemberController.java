@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Member - Profile", description = "회원 프로필 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/members")
+@RequestMapping({"/api/v1/members", "/api/v1/users"})
 public class MemberController {
 
     @Operation(summary = "내 프로필 조회")

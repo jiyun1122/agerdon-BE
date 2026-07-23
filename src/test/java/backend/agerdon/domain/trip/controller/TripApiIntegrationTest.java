@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -54,6 +56,21 @@ class TripApiIntegrationTest {
         mockMvc.perform(get("/api/v1/trips/current"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("AUTH-401"));
+    }
+
+    @Test
+    void allowsCorsPreflightFromAnyLocalDevelopmentPort() throws Exception {
+        mockMvc.perform(options("/api/v1/trips")
+                        .header(HttpHeaders.ORIGIN, "http://localhost:3001")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST"))
+                .andExpect(status().isOk())
+                .andExpect(result -> {
+                    String allowedOrigin = result.getResponse()
+                            .getHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
+                    if (!"http://localhost:3001".equals(allowedOrigin)) {
+                        throw new AssertionError("Unexpected allowed origin: " + allowedOrigin);
+                    }
+                });
     }
 
     @Test
