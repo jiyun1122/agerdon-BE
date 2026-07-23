@@ -105,19 +105,22 @@ public class SecurityConfig {
         objectMapper.writeValue(response.getOutputStream(), ErrorResponse.of(errorCode));
     }
 
-    // 새 도메인 mutsasession7.store CORS 설정
+    // 운영 배포 도메인과 로컬 개발 서버 CORS 설정
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000",
                 "http://mutsasession7.store",
                 "https://mutsasession7.store",
                 "http://www.mutsasession7.store",
                 "https://www.mutsasession7.store",
                 "https://2026-agadon-frontend-two.vercel.app",
                 "https://2026-agadon-frontend.vercel.app"
+        ));
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*"
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
