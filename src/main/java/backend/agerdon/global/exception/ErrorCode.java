@@ -41,11 +41,6 @@ public enum ErrorCode {
     PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "PLACE-001", "존재하지 않는 장소입니다."),
     PLACE_SEARCH_CONDITION_REQUIRED(HttpStatus.BAD_REQUEST, "PLACE-002", "검색어(keyword) 또는 장소 타입(type) 중 하나는 필수 입력 사항입니다."),
 
-    // Favorite
-    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "FAVORITE-001", "즐겨찾기를 찾을 수 없습니다."),
-    FAVORITE_ALREADY_EXISTS(HttpStatus.CONFLICT, "FAVORITE-002", "이미 즐겨찾기에 추가된 장소입니다."),
-    FAVORITE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "FAVORITE-003", "본인의 즐겨찾기만 삭제할 수 있습니다."),
-    
     // Member (마이페이지)
     FAVORITE_PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER-001", "즐겨찾기 장소를 찾을 수 없습니다.");
 
