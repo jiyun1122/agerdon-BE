@@ -27,3 +27,4 @@ public ResponseEntity<ApiResponse<String>> getMyProfile(
     String currentEmail = userDetails.getUsername();
     return ResponseEntity.ok(ApiResponse.success("현재 로그인한 유저의 이메일은 " + currentEmail + " 입니다."));
 }
+}
