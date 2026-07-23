@@ -35,5 +35,6 @@ api:
     rest-key: ${KAKAO_REST_KEY}
   seoul:
     metro-key: ${SEOUL_METRO_KEY}
+    metro-realtime-key: ${SEOUL_METRO_REALTIME_KEY}
   bus:
     service-key: ${BUS_SERVICE_KEY}

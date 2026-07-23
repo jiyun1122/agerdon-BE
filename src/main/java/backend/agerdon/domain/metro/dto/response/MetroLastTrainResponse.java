@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MetroLastTrainResponse {
     private String stationName;
-    private String line;
-    private String direction;
-    private List<TrainInfo> lastTrains;
+    private int line;
+    private List<SubwayArrival> arrivals;
+    private SubwayArrival lastTrainArrival; // arrivals 중 막차로 표시된 항목 (없으면 null)
 }

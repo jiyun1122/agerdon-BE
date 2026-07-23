@@ -18,7 +18,11 @@ public class TaxiController {
 
     private final TaxiService taxiService;
 
-    @Operation(summary = "택시비/경로 조회", description = "출발지-도착지 경도,위도를 받아 카카오 길찾기 응답을 그대로 반환합니다.")
+    @Operation(
+            summary = "택시비/경로 조회",
+            description = "출발지-도착지 좌표(\"경도,위도\" 형식, 예: \"127.111202,37.394912\")를 받아 카카오 길찾기 응답을 그대로 반환합니다. "
+                    + "좌표 형식이 잘못되었거나 도로가 없는 지점이면 카카오 API가 400(TAXI-002)을 반환할 수 있습니다."
+    )
     @PostMapping(value = "/api/directions", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getDirections(@RequestBody DirectionsRequest request) {
         return ResponseEntity.ok(taxiService.getDirections(request));
