@@ -18,6 +18,9 @@ spring:
         secret-key: yourSecretKeyMustBeVeryLongAndSecureBase64EncodedStringExample1234567890
         expire-length: 3600000
 
+server:
+  forward-headers-strategy: framework
+
 management:
   endpoints:
     web:
