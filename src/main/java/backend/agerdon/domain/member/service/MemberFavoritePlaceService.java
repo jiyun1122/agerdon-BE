@@ -70,6 +70,10 @@ public class MemberFavoritePlaceService {
                 .toList();
     }
 
+    public FavoritePlaceResponse getFavorite(Long memberId, Long favoriteId) {
+        return FavoritePlaceResponse.from(findOwnedFavorite(memberId, favoriteId));
+    }
+
     public FavoritePlaceResponse getHomeAddress(Long memberId) {
         return memberFavoritePlaceRepository.findByMemberIdAndFavoriteType(memberId, FavoriteType.HOME)
                 .stream()

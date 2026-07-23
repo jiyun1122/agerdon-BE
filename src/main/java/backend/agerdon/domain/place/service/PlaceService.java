@@ -4,6 +4,8 @@ import backend.agerdon.domain.place.dto.PlaceResponse;
 import backend.agerdon.domain.place.entity.Place;
 import backend.agerdon.domain.place.entity.PlaceType;
 import backend.agerdon.domain.place.repository.PlaceRepository;
+import backend.agerdon.global.exception.CustomException;
+import backend.agerdon.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,7 @@ public class PlaceService {
         } else if (type != null) { // 3. 타입만 들어온 경우
             places = placeRepository.findByType(type);
         } else { // 4. 검색어도 없고 타입도 없는 경우 -> 예외 발생
-            throw new IllegalArgumentException("검색어(keyword) 또는 장소 타입(type) 중 하나는 필수 입력 사항입니다.");
+            throw new CustomException(ErrorCode.PLACE_SEARCH_CONDITION_REQUIRED);
         }
 
         return places.stream()
@@ -41,7 +43,7 @@ public class PlaceService {
     // 장소 단건 조회 로직
     public PlaceResponse getPlace(Long placeId) {
         Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 장소입니다. id=" + placeId));
+                .orElseThrow(() -> new CustomException(ErrorCode.PLACE_NOT_FOUND));
         return PlaceResponse.from(place);
     }
 }

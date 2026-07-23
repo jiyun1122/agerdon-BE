@@ -62,6 +62,16 @@ public class MemberFavoritePlaceController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "즐겨찾기 장소 단건 조회")
+    @GetMapping("/favorite-places/{favoriteId}")
+    public ResponseEntity<ApiResponse<FavoritePlaceResponse>> getFavorite(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long favoriteId
+    ) {
+        FavoritePlaceResponse response = memberFavoritePlaceService.getFavorite(currentMemberId(userDetails), favoriteId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     @Operation(summary = "내 주소 조회", description = "HOME으로 태그된 즐겨찾기 장소를 조회합니다. 등록된 주소가 없으면 data는 null입니다.")
     @GetMapping("/address")
     public ResponseEntity<ApiResponse<FavoritePlaceResponse>> getAddress(
