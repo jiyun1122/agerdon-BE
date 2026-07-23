@@ -69,6 +69,23 @@ class RouteRecommendationServiceTest {
     }
 
     @Test
+    void recommendsSoonestReachableNightBusDeparture() {
+        RouteCandidate expiredBus =
+                candidate(RouteType.BUS, now.minusMinutes(1), 5, 60, 1_500);
+        RouteCandidate nextNightBus =
+                candidate(RouteType.NBUS, now.plusMinutes(20), 5, 75, 2_500);
+        RouteCandidate laterNightBus =
+                candidate(RouteType.NBUS, now.plusMinutes(45), 5, 75, 2_500);
+
+        RouteRecommendationResult result = service.recommend(
+                List.of(expiredBus, laterNightBus, nextNightBus),
+                now
+        );
+
+        assertSame(nextNightBus, result.recommended());
+    }
+
+    @Test
     void throwsWhenNoUsableRouteExists() {
         CustomException exception = assertThrows(
                 CustomException.class,

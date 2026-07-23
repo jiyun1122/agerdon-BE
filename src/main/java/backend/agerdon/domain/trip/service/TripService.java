@@ -26,6 +26,10 @@ import java.time.LocalDateTime;
 @Transactional(readOnly = true)
 public class TripService {
 
+    // 막차력(Member.score) 자동 갱신 폭: 성공 시 가점, 지각(놓침) 시 감점
+    private static final int SUCCESS_SCORE_DELTA = 2;
+    private static final int MISSED_SCORE_DELTA = -5;
+
     private final TripRepository tripRepository;
     private final MemberRepository memberRepository;
     private final RouteCandidateProvider routeCandidateProvider;
@@ -94,6 +98,7 @@ public class TripService {
 
         LocalDateTime now = LocalDateTime.now(clock);
         trip.submitResult(status, now);
+        trip.getMember().adjustScore(status == TripStatus.SUCCESS ? SUCCESS_SCORE_DELTA : MISSED_SCORE_DELTA);
         return tripResponseMapper.toResponse(trip, now);
     }
 

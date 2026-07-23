@@ -1,0 +1,13 @@
+{
+  "name": "agerdon-local-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config frontend-demo/vite.config.js",
+    "build": "vite build --config frontend-demo/vite.config.js",
+    "preview": "vite preview --config frontend-demo/vite.config.js"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0"
+  }
+}
