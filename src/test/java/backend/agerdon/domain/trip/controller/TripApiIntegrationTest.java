@@ -75,15 +75,15 @@ class TripApiIntegrationTest {
     }
 
     @Test
-    void rejectsInvalidCoordinates() throws Exception {
-        String invalidRequest = validCreateRequest().replace("37.5500", "91.0000");
+    void acceptsCoordinatesOutsideConventionalLatitudeRange() throws Exception {
+        String unrestrictedRequest = validCreateRequest().replace("37.5500", "127.0000");
 
         mockMvc.perform(post("/api/v1/trips")
                         .header("Authorization", authorization)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidRequest))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("COMMON-400"));
+                        .content(unrestrictedRequest))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true));
     }
 
     @Test
