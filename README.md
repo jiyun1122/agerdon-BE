@@ -99,8 +99,9 @@ BUS_SERVICE_KEY=...
 저장소 루트에서 백엔드와 프론트를 각각 실행합니다.
 
 ```bash
-# 터미널 1: H2 + mock 경로로 백엔드 실행
-SPRING_PROFILES_ACTIVE=local TRIP_ROUTE_PROVIDER=mock ./gradlew bootRun
+# 터미널 1: H2 + 하이브리드 경로로 백엔드 실행
+SPRING_PROFILES_ACTIVE=local TRIP_ROUTE_PROVIDER=hybrid \
+KAKAO_REST_KEY=카카오_REST_API_키 ./gradlew bootRun
 
 # 터미널 2: 최초 한 번
 npm install
@@ -113,7 +114,10 @@ npm run dev
 `http://localhost:8080`으로 프록시하므로 별도의 프론트 환경변수는 필요하지 않습니다.
 
 - H2 서버를 다시 시작한 뒤에는 로그인 화면에서 `회원가입 후 로그인`을 먼저 누릅니다.
-- 실제 외부 API를 확인하려면 백엔드를 `TRIP_ROUTE_PROVIDER=real`과 필요한 API 키로 실행합니다.
+- `KAKAO_REST_KEY`가 없거나 택시 API가 실패해도 고정 지하철과 버스/N버스
+  후보는 정상적으로 반환됩니다.
+- 기존 서울 지하철·버스 외부 API 방식은 `TRIP_ROUTE_PROVIDER=real`과
+  필요한 API 키를 설정해 별도로 확인할 수 있습니다.
 - 타이머 화면 오른쪽의 `DEV TIME CONTROL`에서 골든타임 30·15·5분 전, 정각,
   1분 경과 상태로 즉시 이동할 수 있습니다.
 - 테스트 시간은 브라우저 표시와 인앱 알람 판정에만 적용되며 서버·DB 시간은 변경하지 않습니다.
