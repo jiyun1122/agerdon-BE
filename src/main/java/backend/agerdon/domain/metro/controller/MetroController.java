@@ -23,7 +23,7 @@ public class MetroController {
     @Operation(summary = "지하철 막차 조회", description = "역 외부코드/요일/상하행 구분으로 23시~01시 사이 열차(막차 후보)를 반환합니다.")
     @GetMapping("/last-train")
     public ResponseEntity<MetroLastTrainResponse> getLastTrain(
-            @Parameter(description = "역 외부코드 (예: 홍대입구 = 0239)") @RequestParam String station,
+            @Parameter(description = "역 외부코드 (예: 홍대입구 = 239)") @RequestParam String station,
             @Parameter(description = "1: 평일, 2: 토요일, 3: 일요일/공휴일") @RequestParam int weekTag,
             @Parameter(description = "1: 상행/내선, 2: 하행/외선") @RequestParam int inoutTag
     ) {

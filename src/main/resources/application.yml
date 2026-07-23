@@ -37,3 +37,6 @@ api:
     metro-key: ${SEOUL_METRO_KEY}
   bus:
     service-key: ${BUS_SERVICE_KEY}
+
+trip:
+  route-provider: ${TRIP_ROUTE_PROVIDER:mock}
