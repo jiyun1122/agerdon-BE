@@ -6,16 +6,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-    sql:
-      init:
-        mode: always
   security:
     jwt:
       token:
@@ -42,3 +38,6 @@ api:
     metro-realtime-key: ${SEOUL_METRO_REALTIME_KEY}
   bus:
     service-key: ${BUS_SERVICE_KEY}
+
+trip:
+  route-provider: ${TRIP_ROUTE_PROVIDER:mock}

@@ -29,7 +29,13 @@ public enum ErrorCode {
 
     // Bus (공공데이터포털)
     BUS_API_ERROR(HttpStatus.BAD_GATEWAY, "BUS-001", "버스 도착정보 API 호출에 실패했습니다."),
-    BUS_STOP_EMPTY(HttpStatus.NOT_FOUND, "BUS-002", "정류소 데이터가 없습니다.");
+    BUS_STOP_EMPTY(HttpStatus.NOT_FOUND, "BUS-002", "정류소 데이터가 없습니다."),
+
+    // Trip
+    TRIP_NOT_FOUND(HttpStatus.NOT_FOUND, "TRIP-001", "여정을 찾을 수 없습니다."),
+    TRIP_IN_PROGRESS(HttpStatus.CONFLICT, "TRIP-002", "결과를 입력하지 않은 여정이 이미 존재합니다."),
+    TRIP_RESULT_ALREADY_SUBMITTED(HttpStatus.CONFLICT, "TRIP-003", "이미 결과가 입력된 여정입니다."),
+    ROUTE_NOT_AVAILABLE(HttpStatus.UNPROCESSABLE_CONTENT, "TRIP-004", "이동 가능한 경로를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;
