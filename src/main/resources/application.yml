@@ -40,4 +40,84 @@ api:
     service-key: ${BUS_SERVICE_KEY}
 
 trip:
-  route-provider: ${TRIP_ROUTE_PROVIDER:mock}
+  route-provider: ${TRIP_ROUTE_PROVIDER:hybrid}
+  hybrid:
+    stations:
+      - code: HONGIK
+        name: 홍대입구역
+        line: 2호선
+        latitude: 37.557192
+        longitude: 126.925381
+        subway-fare: 1550
+        eastbound:
+          label: 상행·내선
+          terminal: 을지로입구행
+          last-time: "00:49"
+        westbound:
+          label: 하행·외선
+          terminal: 신도림행
+          last-time: "00:50"
+        bus-routes:
+          - type: BUS
+            route-no: "7612"
+            stop-name: 홍대입구역 정류장
+            stop-latitude: 37.557039
+            stop-longitude: 126.923756
+            last-time: "00:32"
+            ride-minutes: 42
+            fare: 1500
+          - type: BUS
+            route-no: "5714"
+            stop-name: 동교동삼거리 정류장
+            stop-latitude: 37.556693
+            stop-longitude: 126.923722
+            last-time: "00:25"
+            ride-minutes: 48
+            fare: 1500
+          - type: NBUS
+            route-no: N62
+            stop-name: 홍대입구역 정류장
+            stop-latitude: 37.557039
+            stop-longitude: 126.923756
+            last-time: "03:18"
+            ride-minutes: 60
+            fare: 2500
+      - code: SANGSU
+        name: 상수역
+        line: 6호선
+        latitude: 37.547716
+        longitude: 126.922852
+        subway-fare: 1550
+        eastbound:
+          label: 하행
+          terminal: 공덕행
+          last-time: "00:53"
+        westbound:
+          label: 상행
+          terminal: 새절행
+          last-time: "00:42"
+        bus-routes:
+          - type: BUS
+            route-no: "7011"
+            stop-name: 상수역 정류장
+            stop-latitude: 37.547871
+            stop-longitude: 126.923111
+            last-time: "00:18"
+            ride-minutes: 45
+            fare: 1500
+          - type: BUS
+            route-no: "7612"
+            stop-name: 상수역 정류장
+            stop-latitude: 37.547871
+            stop-longitude: 126.923111
+            last-time: "00:28"
+            ride-minutes: 40
+            fare: 1500
+          - type: NBUS
+            route-no: N62
+            stop-name: 상수역 인근 정류장
+            stop-latitude: 37.548165
+            stop-longitude: 126.923754
+            last-time: "03:12"
+            ride-minutes: 58
+            fare: 2500
