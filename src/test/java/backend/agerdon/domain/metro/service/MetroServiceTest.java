@@ -1,7 +1,6 @@
 package backend.agerdon.domain.metro.service;
 
 import backend.agerdon.domain.metro.client.SeoulMetroClient;
-import backend.agerdon.domain.metro.dto.response.MetroLastTrainResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -43,12 +42,10 @@ class MetroServiceTest {
         when(client.getTimetableRows("239", 1, 1)).thenReturn(rows);
         MetroService service = new MetroService(client);
 
-        MetroLastTrainResponse response = service.getLastTrain("239", 1, 1);
+        var response = service.getScheduledLastTrains("239", 1, 1);
 
-        assertEquals("홍대입구", response.getStationName());
-        assertEquals("2호선", response.getLine());
-        assertEquals(2, response.getLastTrains().size());
-        assertEquals("00:08:00", response.getLastTrains().getLast().getDepartTime());
-        assertEquals("을지로입구", response.getLastTrains().getLast().getDestination());
+        assertEquals(2, response.size());
+        assertEquals("00:08:00", response.getLast().getDepartTime());
+        assertEquals("을지로입구", response.getLast().getDestination());
     }
 }

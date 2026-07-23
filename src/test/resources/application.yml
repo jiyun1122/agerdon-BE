@@ -18,5 +18,6 @@ api:
     rest-key: test-kakao-key
   seoul:
     metro-key: test-metro-key
+    metro-realtime-key: test-metro-realtime-key
   bus:
     service-key: test-bus-key

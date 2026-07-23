@@ -14,5 +14,6 @@ api:
     rest-key: ${KAKAO_REST_KEY:local-dummy-key}
   seoul:
     metro-key: ${SEOUL_METRO_KEY:local-dummy-key}
+    metro-realtime-key: ${SEOUL_METRO_REALTIME_KEY:local-dummy-key}
   bus:
     service-key: ${BUS_SERVICE_KEY:local-dummy-key}

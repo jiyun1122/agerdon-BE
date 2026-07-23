@@ -3,7 +3,6 @@ package backend.agerdon.domain.trip.provider;
 import backend.agerdon.domain.bus.dto.response.BusArrivalResponse;
 import backend.agerdon.domain.bus.dto.response.BusStopInfo;
 import backend.agerdon.domain.bus.service.BusService;
-import backend.agerdon.domain.metro.dto.response.MetroLastTrainResponse;
 import backend.agerdon.domain.metro.dto.response.TrainInfo;
 import backend.agerdon.domain.metro.service.MetroService;
 import backend.agerdon.domain.trip.entity.RouteType;
@@ -43,15 +42,10 @@ class HongikTransitCandidateProviderTest {
         BusService busService = mock(BusService.class);
         LocalDateTime requestedAt = LocalDateTime.of(2026, 7, 23, 23, 0);
 
-        when(metroService.getLastTrain("239", 1, 1))
-                .thenReturn(new MetroLastTrainResponse(
-                        "홍대입구",
-                        "02호선",
-                        "상행/내선",
-                        List.of(
-                                new TrainInfo("2001", "23:45:00", "성수"),
-                                new TrainInfo("2003", "00:10:00", "을지로입구")
-                        )
+        when(metroService.getScheduledLastTrains("239", 1, 1))
+                .thenReturn(List.of(
+                        new TrainInfo("2001", "23:45:00", "성수"),
+                        new TrainInfo("2003", "00:10:00", "을지로입구")
                 ));
         when(busService.getArrival("100100118"))
                 .thenReturn(new BusArrivalResponse(
@@ -102,7 +96,7 @@ class HongikTransitCandidateProviderTest {
         BusService busService = mock(BusService.class);
         LocalDateTime requestedAt = LocalDateTime.of(2026, 7, 23, 23, 0);
 
-        when(metroService.getLastTrain("239", 1, 1))
+        when(metroService.getScheduledLastTrains("239", 1, 1))
                 .thenThrow(new CustomException(ErrorCode.METRO_API_ERROR));
         when(busService.getArrival("100100118"))
                 .thenReturn(new BusArrivalResponse(
@@ -150,7 +144,7 @@ class HongikTransitCandidateProviderTest {
         );
 
         assertTrue(candidates.isEmpty());
-        verify(metroService, never()).getLastTrain(
+        verify(metroService, never()).getScheduledLastTrains(
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyInt(),
                 org.mockito.ArgumentMatchers.anyInt()

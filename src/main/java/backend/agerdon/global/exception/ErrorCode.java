@@ -21,10 +21,11 @@ public enum ErrorCode {
 
     // Taxi (Kakao Mobility)
     KAKAO_API_ERROR(HttpStatus.BAD_GATEWAY, "TAXI-001", "카카오 길찾기 API 호출에 실패했습니다."),
+    KAKAO_INVALID_REQUEST(HttpStatus.BAD_REQUEST, "TAXI-002", "카카오 길찾기 API 요청 값이 올바르지 않습니다."),
 
     // Metro (서울 열린데이터광장)
-    METRO_API_ERROR(HttpStatus.BAD_GATEWAY, "METRO-001", "지하철 시간표 API 호출에 실패했습니다."),
-    METRO_TIMETABLE_EMPTY(HttpStatus.NOT_FOUND, "METRO-002", "시간표 데이터가 없습니다."),
+    METRO_API_ERROR(HttpStatus.BAD_GATEWAY, "METRO-001", "지하철 실시간 도착정보 API 호출에 실패했습니다."),
+    METRO_TIMETABLE_EMPTY(HttpStatus.NOT_FOUND, "METRO-002", "실시간 도착정보가 없습니다."),
 
     // Bus (공공데이터포털)
     BUS_API_ERROR(HttpStatus.BAD_GATEWAY, "BUS-001", "버스 도착정보 API 호출에 실패했습니다."),

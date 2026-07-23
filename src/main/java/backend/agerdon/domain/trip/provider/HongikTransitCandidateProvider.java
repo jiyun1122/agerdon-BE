@@ -3,7 +3,6 @@ package backend.agerdon.domain.trip.provider;
 import backend.agerdon.domain.bus.dto.response.BusArrivalResponse;
 import backend.agerdon.domain.bus.dto.response.BusStopInfo;
 import backend.agerdon.domain.bus.service.BusService;
-import backend.agerdon.domain.metro.dto.response.MetroLastTrainResponse;
 import backend.agerdon.domain.metro.dto.response.TrainInfo;
 import backend.agerdon.domain.metro.service.MetroService;
 import backend.agerdon.domain.trip.entity.RouteType;
@@ -91,9 +90,9 @@ public class HongikTransitCandidateProvider {
         int direction = destination.longitude().doubleValue() >= HONGIK_STATION_LONGITUDE ? 1 : 2;
 
         try {
-            MetroLastTrainResponse response =
-                    metroService.getLastTrain(HONGIK_STATION_CODE, weekTag, direction);
-            Optional<LocalDateTime> lastDeparture = response.getLastTrains().stream()
+            List<TrainInfo> lastTrains =
+                    metroService.getScheduledLastTrains(HONGIK_STATION_CODE, weekTag, direction);
+            Optional<LocalDateTime> lastDeparture = lastTrains.stream()
                     .map(TrainInfo::getDepartTime)
                     .map(value -> TransitScheduleParser.parse(value, requestedAt))
                     .flatMap(Optional::stream)
@@ -114,7 +113,7 @@ public class HongikTransitCandidateProvider {
                     destination,
                     26.0
             );
-            String terminal = response.getLastTrains().stream()
+            String terminal = lastTrains.stream()
                     .filter(train -> TransitScheduleParser.parse(train.getDepartTime(), requestedAt)
                             .filter(lastDeparture.get()::equals)
                             .isPresent())
@@ -123,7 +122,7 @@ public class HongikTransitCandidateProvider {
                     .orElse(direction == 1 ? "내선" : "외선");
 
             return Optional.of(new RouteCandidate(
-                    "지하철 막차 · " + response.getLine(),
+                    "지하철 막차 · 2호선",
                     "%s에서 홍대입구역까지 약 %d분 도보 이동 후 %s 방면 막차를 탑승합니다. "
                             .formatted(origin.name(), walkMinutes, terminal)
                             + "막차 시각은 서울교통공사 시간표 기준이며 총소요시간은 예상치입니다.",
