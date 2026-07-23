@@ -55,7 +55,10 @@ class RealRouteCandidateProviderTest {
         HongikTransitCandidateProvider transitProvider = mock(HongikTransitCandidateProvider.class);
         when(transitProvider.findCandidates(origin, destination, requestedAt))
                 .thenReturn(List.of());
-        RealRouteCandidateProvider provider = new RealRouteCandidateProvider(client, transitProvider);
+        RealRouteCandidateProvider provider = new RealRouteCandidateProvider(
+                new KakaoTaxiRouteCandidateProvider(client),
+                transitProvider
+        );
 
         List<RouteCandidate> candidates =
                 provider.findCandidates(origin, destination, requestedAt);
@@ -78,7 +81,10 @@ class RealRouteCandidateProviderTest {
                         {"routes":[]}
                         """);
         HongikTransitCandidateProvider transitProvider = emptyTransitProvider();
-        RealRouteCandidateProvider provider = new RealRouteCandidateProvider(client, transitProvider);
+        RealRouteCandidateProvider provider = new RealRouteCandidateProvider(
+                new KakaoTaxiRouteCandidateProvider(client),
+                transitProvider
+        );
 
         CustomException exception = assertThrows(
                 CustomException.class,
@@ -96,7 +102,10 @@ class RealRouteCandidateProviderTest {
                         {"routes":[{"summary":{}}]}
                         """);
         HongikTransitCandidateProvider transitProvider = emptyTransitProvider();
-        RealRouteCandidateProvider provider = new RealRouteCandidateProvider(client, transitProvider);
+        RealRouteCandidateProvider provider = new RealRouteCandidateProvider(
+                new KakaoTaxiRouteCandidateProvider(client),
+                transitProvider
+        );
 
         CustomException exception = assertThrows(
                 CustomException.class,

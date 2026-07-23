@@ -21,3 +21,6 @@ api:
     metro-realtime-key: test-metro-realtime-key
   bus:
     service-key: test-bus-key
+
+trip:
+  route-provider: mock

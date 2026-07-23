@@ -28,6 +28,15 @@ class TransitScheduleParserTest {
     }
 
     @Test
+    void resolvesLateNightDepartureToPreviousDateWhenRequestedAfterMidnight() {
+        LocalDateTime requestedAt = LocalDateTime.of(2026, 7, 24, 1, 0);
+
+        LocalDateTime parsed = TransitScheduleParser.parse("23:45", requestedAt).orElseThrow();
+
+        assertEquals(LocalDateTime.of(2026, 7, 23, 23, 45), parsed);
+    }
+
+    @Test
     void parsesBusFullDateTimeFormat() {
         LocalDateTime parsed = TransitScheduleParser.parse(
                 "20260724032000",

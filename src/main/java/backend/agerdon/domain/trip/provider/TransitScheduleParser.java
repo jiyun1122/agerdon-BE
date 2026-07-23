@@ -48,12 +48,18 @@ final class TransitScheduleParser {
 
     private static LocalDateTime resolveServiceDate(LocalTime serviceTime, LocalDateTime requestedAt) {
         LocalDate date = requestedAt.toLocalDate();
+        boolean requestedInEarlyMorning =
+                requestedAt.toLocalTime().isBefore(SERVICE_DAY_BOUNDARY);
+        boolean serviceInEarlyMorning = serviceTime.isBefore(SERVICE_DAY_BOUNDARY);
 
-        // 23시 이후 조회한 00~04시대 막차는 다음 달력 날짜에 운행한다.
-        if (!serviceTime.isBefore(SERVICE_DAY_BOUNDARY)
-                || requestedAt.toLocalTime().isBefore(SERVICE_DAY_BOUNDARY)) {
-            return LocalDateTime.of(date, serviceTime);
+        // 00~04시 조회는 전날 시작된 운행일에 속한다.
+        if (requestedInEarlyMorning) {
+            LocalDate serviceDate = serviceInEarlyMorning ? date : date.minusDays(1);
+            return LocalDateTime.of(serviceDate, serviceTime);
         }
-        return LocalDateTime.of(date.plusDays(1), serviceTime);
+
+        // 05시 이후 조회한 00~04시대 막차/심야편은 다음 달력 날짜에 운행한다.
+        LocalDate serviceDate = serviceInEarlyMorning ? date.plusDays(1) : date;
+        return LocalDateTime.of(serviceDate, serviceTime);
     }
 }

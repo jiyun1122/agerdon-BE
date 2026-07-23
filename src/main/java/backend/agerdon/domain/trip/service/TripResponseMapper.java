@@ -5,6 +5,7 @@ import backend.agerdon.domain.trip.dto.response.RouteResponse;
 import backend.agerdon.domain.trip.dto.response.TimerResponse;
 import backend.agerdon.domain.trip.dto.response.TripDetailResponse;
 import backend.agerdon.domain.trip.entity.Route;
+import backend.agerdon.domain.trip.entity.RouteType;
 import backend.agerdon.domain.trip.entity.TimerState;
 import backend.agerdon.domain.trip.entity.Trip;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class TripResponseMapper {
                 trip.getDestinationLongitude()
         );
         List<RouteResponse> routes = trip.getRoutes().stream()
+                .filter(route -> isAvailableNightBusOrOtherRoute(route, now))
                 .map(this::toRouteResponse)
                 .toList();
 
@@ -49,6 +51,14 @@ public class TripResponseMapper {
                 toTimerResponse(trip, now),
                 routes
         );
+    }
+
+    private boolean isAvailableNightBusOrOtherRoute(Route route, LocalDateTime now) {
+        if (route.getType() != RouteType.NBUS) {
+            return true;
+        }
+        LocalDateTime departureDeadline = route.getDepartureDeadline();
+        return departureDeadline != null && !departureDeadline.isBefore(now);
     }
 
     private RouteResponse toRouteResponse(Route route) {
