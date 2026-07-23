@@ -116,7 +116,8 @@ public class SecurityConfig {
                 "https://mutsasession7.store",
                 "http://www.mutsasession7.store",
                 "https://www.mutsasession7.store",
-                "https://2026-agadon-frontend-two.vercel.app"
+                "https://2026-agadon-frontend-two.vercel.app",
+                "https://2026-agadon-frontend.vercel.app"
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

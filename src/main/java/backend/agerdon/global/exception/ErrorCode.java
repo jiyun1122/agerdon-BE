@@ -35,7 +35,11 @@ public enum ErrorCode {
     TRIP_NOT_FOUND(HttpStatus.NOT_FOUND, "TRIP-001", "여정을 찾을 수 없습니다."),
     TRIP_IN_PROGRESS(HttpStatus.CONFLICT, "TRIP-002", "결과를 입력하지 않은 여정이 이미 존재합니다."),
     TRIP_RESULT_ALREADY_SUBMITTED(HttpStatus.CONFLICT, "TRIP-003", "이미 결과가 입력된 여정입니다."),
-    ROUTE_NOT_AVAILABLE(HttpStatus.UNPROCESSABLE_CONTENT, "TRIP-004", "이동 가능한 경로를 찾을 수 없습니다.");
+    ROUTE_NOT_AVAILABLE(HttpStatus.UNPROCESSABLE_CONTENT, "TRIP-004", "이동 가능한 경로를 찾을 수 없습니다."),
+
+    // Member (마이페이지)
+    FAVORITE_PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER-001", "즐겨찾기 장소를 찾을 수 없습니다."),
+    PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER-002", "존재하지 않는 장소입니다.");
 
     private final HttpStatus status;
     private final String code;

@@ -45,4 +45,12 @@ public class Member {
         this.score = score;
     }
 
+    private static final int MIN_SCORE = 0;
+    private static final int MAX_SCORE = 100;
+
+    // 여정 결과(성공/지각)에 따라 막차력 점수를 가감하는 메서드. 0~100 범위로 clamp된다.
+    public void adjustScore(int delta) {
+        this.score = Math.max(MIN_SCORE, Math.min(MAX_SCORE, this.score + delta));
+    }
+
 }
