@@ -30,7 +30,15 @@ public class HybridTransitCandidateProvider {
         List<RouteCandidate> candidates = new ArrayList<>();
         candidates.add(createSubwayCandidate(station, origin, destination, requestedAt));
         station.getBusRoutes().stream()
-                .map(route -> createBusCandidate(station, route, origin, destination, requestedAt))
+                .flatMap(route -> scheduleTimes(route).stream()
+                        .map(scheduleTime -> createBusCandidate(
+                                station,
+                                route,
+                                origin,
+                                destination,
+                                requestedAt,
+                                scheduleTime
+                        )))
                 .forEach(candidates::add);
         return candidates;
     }
@@ -94,9 +102,10 @@ public class HybridTransitCandidateProvider {
             HybridRouteProperties.BusRoute route,
             RouteSearchLocation origin,
             RouteSearchLocation destination,
-            LocalDateTime requestedAt
+            LocalDateTime requestedAt,
+            String scheduleTime
     ) {
-        LocalDateTime scheduledAt = parseSchedule(route.getLastTime(), requestedAt);
+        LocalDateTime scheduledAt = parseSchedule(scheduleTime, requestedAt);
         int walkMinutes = walkingMinutes(
                 origin,
                 route.getStopLatitude(),
@@ -104,9 +113,25 @@ public class HybridTransitCandidateProvider {
         );
         boolean nightBus = route.getType() == RouteType.NBUS;
         String transportName = nightBus ? "심야버스" : "버스";
+        String routeName = nightBus
+                ? "%s %s %s 출발 · %s".formatted(
+                        route.getRouteNo(),
+                        transportName,
+                        scheduledAt.toLocalTime(),
+                        station.getName()
+                )
+                : "%s %s 막차 · %s".formatted(
+                        route.getRouteNo(),
+                        transportName,
+                        station.getName()
+                );
+        String scheduleGuide = nightBus
+                ? "정류장 출발 시각은 %s이며 첫 운행부터 여러 편을 입력한 목데이터입니다."
+                        .formatted(scheduledAt.toLocalTime())
+                : "일반버스 막차 시각은 노선별 목데이터입니다.";
 
         return new RouteCandidate(
-                "%s %s · %s".formatted(route.getRouteNo(), transportName, station.getName()),
+                routeName,
                 "%s에서 %s까지 약 %d분 도보 이동 후 %s번을 탑승합니다. "
                         .formatted(
                                 origin.name(),
@@ -114,13 +139,23 @@ public class HybridTransitCandidateProvider {
                                 walkMinutes,
                                 route.getRouteNo()
                         )
-                        + destination.name() + " 방향 이동을 위한 노선별 목데이터입니다.",
+                        + destination.name() + " 방향 이동을 위한 경로입니다. "
+                        + scheduleGuide,
                 walkMinutes + route.getRideMinutes(),
                 walkMinutes,
                 scheduledAt,
                 route.getFare(),
                 route.getType()
         );
+    }
+
+    private List<String> scheduleTimes(HybridRouteProperties.BusRoute route) {
+        if (route.getType() == RouteType.NBUS
+                && route.getDepartureTimes() != null
+                && !route.getDepartureTimes().isEmpty()) {
+            return route.getDepartureTimes();
+        }
+        return List.of(route.getLastTime());
     }
 
     private LocalDateTime parseSchedule(String lastTime, LocalDateTime requestedAt) {

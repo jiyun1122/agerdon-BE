@@ -33,8 +33,25 @@ class HybridTransitCandidateProviderTest {
                 subway.scheduledAt()
         );
         assertEquals(
-                List.of(RouteType.SUBWAY, RouteType.BUS, RouteType.NBUS),
+                List.of(
+                        RouteType.SUBWAY,
+                        RouteType.BUS,
+                        RouteType.NBUS,
+                        RouteType.NBUS,
+                        RouteType.NBUS
+                ),
                 candidates.stream().map(RouteCandidate::type).toList()
+        );
+        assertEquals(
+                List.of(
+                        LocalDateTime.of(2026, 7, 23, 23, 50),
+                        LocalDateTime.of(2026, 7, 24, 0, 15),
+                        LocalDateTime.of(2026, 7, 24, 1, 5)
+                ),
+                candidates.stream()
+                        .filter(candidate -> candidate.type() == RouteType.NBUS)
+                        .map(RouteCandidate::scheduledAt)
+                        .toList()
         );
     }
 
@@ -87,7 +104,14 @@ class HybridTransitCandidateProviderTest {
                         schedule("상행·내선", "을지로입구행", "00:49"),
                         schedule("하행·외선", "신도림행", "00:50"),
                         bus(RouteType.BUS, "7612", 37.557039, 126.923756, "00:32"),
-                        bus(RouteType.NBUS, "N62", 37.557039, 126.923756, "03:18")
+                        nightBus(
+                                "N62",
+                                37.557039,
+                                126.923756,
+                                "23:45",
+                                "00:10",
+                                "01:00"
+                        )
                 ),
                 station(
                         "SANGSU",
@@ -98,7 +122,14 @@ class HybridTransitCandidateProviderTest {
                         schedule("하행", "공덕행", "00:53"),
                         schedule("상행", "새절행", "00:42"),
                         bus(RouteType.BUS, "7011", 37.547871, 126.923111, "00:18"),
-                        bus(RouteType.NBUS, "N62", 37.548165, 126.923754, "03:12")
+                        nightBus(
+                                "N62",
+                                37.548165,
+                                126.923754,
+                                "23:50",
+                                "00:15",
+                                "01:05"
+                        )
                 )
         ));
         return properties;
@@ -156,6 +187,24 @@ class HybridTransitCandidateProviderTest {
         route.setLastTime(lastTime);
         route.setRideMinutes(40);
         route.setFare(type == RouteType.NBUS ? 2_500 : 1_500);
+        return route;
+    }
+
+    private HybridRouteProperties.BusRoute nightBus(
+            String routeNo,
+            double latitude,
+            double longitude,
+            String... departureTimes
+    ) {
+        HybridRouteProperties.BusRoute route = new HybridRouteProperties.BusRoute();
+        route.setType(RouteType.NBUS);
+        route.setRouteNo(routeNo);
+        route.setStopName("테스트 심야 정류장");
+        route.setStopLatitude(latitude);
+        route.setStopLongitude(longitude);
+        route.setDepartureTimes(List.of(departureTimes));
+        route.setRideMinutes(40);
+        route.setFare(2_500);
         return route;
     }
 

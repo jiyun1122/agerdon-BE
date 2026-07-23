@@ -201,8 +201,8 @@ function routeCard(route, alternative = false) {
         </div>
         ${route.scheduledAt ? `
           <div class="route-time">
-            막차 ${formatClock(route.scheduledAt)}
-            <b>· 출발 ${formatClock(route.departureDeadline)}</b>
+            ${route.type === "NBUS" ? "정류장 출발" : "막차"} ${formatClock(route.scheduledAt)}
+            <b>· 현위치 출발 ${formatClock(route.departureDeadline)}</b>
           </div>
         ` : ""}
       </div>
@@ -403,8 +403,13 @@ function renderTrip() {
   const viewState = timerViewState();
   const expired = viewState === "EXPIRED";
   const regularRoutes = trip.routes.filter((route) => ["SUBWAY", "BUS"].includes(route.type));
-  const alternatives = trip.routes.filter((route) => ["NBUS", "TAXI"].includes(route.type));
   const taxi = trip.routes.find((route) => route.type === "TAXI");
+  const nextNightBus = trip.routes
+    .filter((route) => route.type === "NBUS")
+    .filter((route) => route.departureDeadline
+      && new Date(route.departureDeadline).getTime() >= simulatedNowMs())
+    .sort((a, b) => new Date(a.departureDeadline) - new Date(b.departureDeadline))[0];
+  const alternatives = [taxi, nextNightBus].filter(Boolean);
   const busMissing = !trip.routes.some((route) => ["BUS", "NBUS"].includes(route.type));
 
   app.innerHTML = `
@@ -439,6 +444,9 @@ function renderTrip() {
                 : '<p class="empty-copy">조회된 N버스·택시 경로가 없습니다.</p>'}
               ${!alternatives.some((route) => route.type === "NBUS")
                 ? '<p class="api-note">N버스 정보가 없습니다. 실제 모드에서는 버스 API 응답과 목적지 운행 권역이 모두 일치해야 표시됩니다.</p>'
+                : ""}
+              ${!taxi
+                ? '<p class="api-note">택시 정보가 없습니다. 카카오 REST API 키와 일일 호출 할당량을 확인하세요.</p>'
                 : ""}
             </section>
           ` : `

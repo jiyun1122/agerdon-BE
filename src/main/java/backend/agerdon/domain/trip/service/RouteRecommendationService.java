@@ -27,6 +27,11 @@ public class RouteRecommendationService {
             Comparator.comparingInt(RouteCandidate::totalMinutes)
                     .thenComparingInt(RouteCandidate::fare);
 
+    private static final Comparator<RouteCandidate> NIGHT_BUS_PREFERENCE =
+            Comparator.comparing(RouteCandidate::departureDeadline)
+                    .thenComparingInt(RouteCandidate::totalMinutes)
+                    .thenComparingInt(RouteCandidate::fare);
+
     public RouteRecommendationResult recommend(
             List<RouteCandidate> candidates,
             LocalDateTime now
@@ -67,7 +72,7 @@ public class RouteRecommendationService {
         return candidates.stream()
                 .filter(candidate -> candidate.type() == RouteType.NBUS)
                 .filter(candidate -> canDepart(candidate, now))
-                .sorted(SCHEDULED_ROUTE_PREFERENCE)
+                .sorted(NIGHT_BUS_PREFERENCE)
                 .findFirst()
                 .orElse(null);
     }

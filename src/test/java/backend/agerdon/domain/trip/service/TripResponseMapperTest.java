@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -77,6 +78,38 @@ class TripResponseMapperTest {
         assertNull(response.getTimer().getRemainingSeconds());
     }
 
+    @Test
+    void exposesOnlyNightBusDeparturesReachableFromCurrentLocation() {
+        Clock clock = Clock.fixed(Instant.parse("2026-07-23T15:41:00Z"), SEOUL);
+        TripResponseMapper mapper = new TripResponseMapper(clock);
+        LocalDateTime now = LocalDateTime.of(2026, 7, 24, 0, 41);
+        Trip trip = tripWithRecommendedRoute(
+                LocalDateTime.of(2026, 7, 24, 0, 50),
+                9,
+                RouteType.SUBWAY
+        );
+        trip.addRoute(route(
+                "이미 놓친 N62",
+                RouteType.NBUS,
+                LocalDateTime.of(2026, 7, 24, 0, 45),
+                5
+        ));
+        trip.addRoute(route(
+                "다음 N62",
+                RouteType.NBUS,
+                LocalDateTime.of(2026, 7, 24, 1, 0),
+                9
+        ));
+
+        TripDetailResponse response = mapper.toResponse(trip, now);
+
+        assertEquals(
+                List.of(RouteType.SUBWAY, RouteType.NBUS),
+                response.getRoutes().stream().map(route -> route.getType()).toList()
+        );
+        assertEquals("다음 N62", response.getRoutes().get(1).getName());
+    }
+
     private Trip tripWithRecommendedRoute(
             LocalDateTime scheduledAt,
             int walkMinutes,
@@ -110,5 +143,23 @@ class TripResponseMapperTest {
                 .type(routeType)
                 .build());
         return trip;
+    }
+
+    private Route route(
+            String name,
+            RouteType type,
+            LocalDateTime scheduledAt,
+            int walkMinutes
+    ) {
+        return Route.builder()
+                .name(name)
+                .guide("안내")
+                .totalMinutes(60)
+                .walkMinutes(walkMinutes)
+                .scheduledAt(scheduledAt)
+                .fare(2_500)
+                .recommended(false)
+                .type(type)
+                .build();
     }
 }

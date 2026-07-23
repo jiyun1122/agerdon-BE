@@ -48,6 +48,7 @@ public class HybridRouteProperties {
         private double stopLatitude;
         private double stopLongitude;
         private String lastTime;
+        private List<String> departureTimes = new ArrayList<>();
         private int rideMinutes;
         private int fare;
     }
