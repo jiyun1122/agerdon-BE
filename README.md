@@ -67,3 +67,29 @@ BUS_SERVICE_KEY=...
 - `scheduledAt`은 실제 외부 API의 막차 시각입니다.
 - 버스·지하철 `totalMinutes`와 지하철 거리 추가요금은 좌표 거리 기반 예상치입니다.
 - 어느 한 외부 API가 실패하면 해당 후보만 제외하며, 다른 실제 후보를 mock으로 대체하지 않습니다.
+
+---
+
+## 🖥️ 로컬 프론트 연동 데모
+
+저장소 루트에서 백엔드와 프론트를 각각 실행합니다.
+
+```bash
+# 터미널 1: H2 + mock 경로로 백엔드 실행
+SPRING_PROFILES_ACTIVE=local TRIP_ROUTE_PROVIDER=mock ./gradlew bootRun
+
+# 터미널 2: 최초 한 번
+npm install
+
+# 터미널 2: 프론트 실행
+npm run dev
+```
+
+브라우저에서 `http://localhost:3000`을 엽니다. Vite가 `/api` 요청을
+`http://localhost:8080`으로 프록시하므로 별도의 프론트 환경변수는 필요하지 않습니다.
+
+- H2 서버를 다시 시작한 뒤에는 로그인 화면에서 `회원가입 후 로그인`을 먼저 누릅니다.
+- 실제 외부 API를 확인하려면 백엔드를 `TRIP_ROUTE_PROVIDER=real`과 필요한 API 키로 실행합니다.
+- 타이머 화면 오른쪽의 `DEV TIME CONTROL`에서 골든타임 30·15·5분 전, 정각,
+  1분 경과 상태로 즉시 이동할 수 있습니다.
+- 테스트 시간은 브라우저 표시와 인앱 알람 판정에만 적용되며 서버·DB 시간은 변경하지 않습니다.
