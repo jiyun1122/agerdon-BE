@@ -37,3 +37,6 @@ out/
 .vscode/
 .env
 
+### Local deploy scratch files ###
+.deploy-tmp/
+
