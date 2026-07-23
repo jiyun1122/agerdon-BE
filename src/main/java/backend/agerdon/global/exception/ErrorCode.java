@@ -35,7 +35,12 @@ public enum ErrorCode {
     TRIP_NOT_FOUND(HttpStatus.NOT_FOUND, "TRIP-001", "여정을 찾을 수 없습니다."),
     TRIP_IN_PROGRESS(HttpStatus.CONFLICT, "TRIP-002", "결과를 입력하지 않은 여정이 이미 존재합니다."),
     TRIP_RESULT_ALREADY_SUBMITTED(HttpStatus.CONFLICT, "TRIP-003", "이미 결과가 입력된 여정입니다."),
-    ROUTE_NOT_AVAILABLE(HttpStatus.UNPROCESSABLE_CONTENT, "TRIP-004", "이동 가능한 경로를 찾을 수 없습니다.");
+    ROUTE_NOT_AVAILABLE(HttpStatus.UNPROCESSABLE_CONTENT, "TRIP-004", "이동 가능한 경로를 찾을 수 없습니다."),
+
+    // Favorite
+    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "FAVORITE-001", "즐겨찾기를 찾을 수 없습니다."),
+    FAVORITE_ALREADY_EXISTS(HttpStatus.CONFLICT, "FAVORITE-002", "이미 즐겨찾기에 추가된 장소입니다."),
+    FAVORITE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "FAVORITE-003", "본인의 즐겨찾기만 삭제할 수 있습니다.");
 
     private final HttpStatus status;
     private final String code;
