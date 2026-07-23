@@ -32,7 +32,7 @@ management:
 
 api:
   kakao:
-    rest-key: ${KAKAO_REST_KEY}
+    rest-key: f3eedb84d944110a77e0120753fa3412
   seoul:
     metro-key: ${SEOUL_METRO_KEY}
     metro-realtime-key: ${SEOUL_METRO_REALTIME_KEY}
