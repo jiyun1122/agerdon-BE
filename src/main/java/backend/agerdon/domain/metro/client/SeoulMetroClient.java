@@ -29,8 +29,12 @@ public class SeoulMetroClient {
     @Value("${api.seoul.metro-key}")
     private String seoulMetroKey;
 
+    private static final String NO_DATA_CODE = "INFO-200";
+
     /**
-     * 시간표 전체(row 배열)를 그대로 반환한다. 데이터가 없으면 null.
+     * 시간표 전체(row 배열)를 그대로 반환한다.
+     * 해당 역외부코드에 시간표 데이터가 없는 경우(예: 2호선 등 미제공 노선)는
+     * 정상 응답이므로 null을 반환하고, 실제 API 호출/응답 실패만 예외로 처리한다.
      */
     public JsonNode getTimetableRows(String station, int weekTag, int inoutTag) {
         String url = String.format(TIMETABLE_URL_FORMAT, seoulMetroKey, station, weekTag, inoutTag);
@@ -41,6 +45,12 @@ public class SeoulMetroClient {
             JsonNode service = root.get("SearchSTNTimeTableByFRCodeService");
 
             if (service == null) {
+                JsonNode result = root.get("RESULT");
+                String resultCode = result != null ? result.path("CODE").asText() : "";
+                if (NO_DATA_CODE.equals(resultCode)) {
+                    return null;
+                }
+                log.error("지하철 시간표 API 응답 오류: {}", rawResponse);
                 throw new CustomException(ErrorCode.METRO_API_ERROR);
             }
             return service.get("row");
