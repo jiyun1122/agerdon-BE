@@ -17,3 +17,12 @@ spring:
       token:
         secret-key: yourSecretKeyMustBeVeryLongAndSecureBase64EncodedStringExample1234567890
         expire-length: 3600000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never

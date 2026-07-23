@@ -54,4 +54,21 @@ jobs:
               exit 1
             fi
 
+            HEALTHY=false
+            for i in $(seq 1 10); do
+              if curl -sf http://localhost:8080/actuator/health > /dev/null; then
+                echo "Health check passed"
+                HEALTHY=true
+                break
+              fi
+              echo "Waiting for app to become healthy... ($i/10)"
+              sleep 5
+            done
+
+            if [ "$HEALTHY" != "true" ]; then
+              echo "ERROR: my-spring-app is running but /actuator/health did not respond in time"
+              docker compose logs --tail 80 app
+              exit 1
+            fi
+
             docker image prune -af

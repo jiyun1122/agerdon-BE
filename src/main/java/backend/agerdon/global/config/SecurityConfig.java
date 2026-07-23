@@ -61,6 +61,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+                        // Docker healthcheck / 모니터링용 헬스 엔드포인트 개방
+                        .requestMatchers("/actuator/health").permitAll()
                         // 그 외 나머지 도메인 API는 무조건 JWT 검증 필요
                         .anyRequest().authenticated()
                 )
