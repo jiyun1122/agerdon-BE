@@ -30,10 +30,9 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void businessExceptionReturnsConfiguredStatusAndCode() throws Exception {
+    void customExceptionReturnsConfiguredStatusAndCode() throws Exception {
         mockMvc.perform(get("/test/business"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.code").value(ErrorCode.USER_NOT_FOUND.getCode()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.USER_NOT_FOUND.getMessage()));
     }
@@ -45,7 +44,7 @@ class GlobalExceptionHandlerTest {
                         .content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
-                .andExpect(jsonPath("$.data.name").value("이름은 필수입니다."));
+                .andExpect(jsonPath("$.message").value("name: 이름은 필수입니다."));
     }
 
     @Test
@@ -60,8 +59,8 @@ class GlobalExceptionHandlerTest {
     private static class TestController {
 
         @GetMapping("/test/business")
-        void businessException() {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        void customException() {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
         @PostMapping("/test/validation")

@@ -1,6 +1,5 @@
 package backend.agerdon.global.response;
 
-import backend.agerdon.global.exception.ErrorCode;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -37,15 +36,4 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, code, message, data);
     }
 
-    public static ApiResponse<Void> error(ErrorCode errorCode) {
-        return error(errorCode, errorCode.getMessage());
-    }
-
-    public static ApiResponse<Void> error(ErrorCode errorCode, String message) {
-        return new ApiResponse<>(false, errorCode.getCode(), message, null);
-    }
-
-    public static <T> ApiResponse<T> error(ErrorCode errorCode, String message, T data) {
-        return new ApiResponse<>(false, errorCode.getCode(), message, data);
-    }
 }

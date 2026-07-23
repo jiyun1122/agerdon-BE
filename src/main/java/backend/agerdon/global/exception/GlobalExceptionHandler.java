@@ -1,6 +1,5 @@
 package backend.agerdon.global.exception;
 
-import backend.agerdon.global.response.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +19,17 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException exception) {
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(CustomException exception) {
+        log.warn("CustomException: {}", exception.getMessage());
         ErrorCode errorCode = exception.getErrorCode();
         return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(ApiResponse.error(errorCode, exception.getMessage()));
+                .status(errorCode.getStatus())
+                .body(ErrorResponse.of(errorCode, exception.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<String, String>>> handleMethodArgumentNotValid(
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(
             MethodArgumentNotValidException exception
     ) {
         Map<String, String> fieldErrors = new LinkedHashMap<>();
@@ -37,28 +37,24 @@ public class GlobalExceptionHandler {
                 fieldErrors.putIfAbsent(error.getField(), error.getDefaultMessage())
         );
 
-        ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(ApiResponse.error(errorCode, errorCode.getMessage(), fieldErrors));
+        String message = fieldErrors.entrySet().stream()
+                .map(entry -> entry.getKey() + ": " + entry.getValue())
+                .collect(Collectors.joining(", "));
+        return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE, message);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleConstraintViolation(
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(
             ConstraintViolationException exception
     ) {
         String message = exception.getConstraintViolations().stream()
                 .map(violation -> violation.getMessage())
                 .collect(Collectors.joining(", "));
-        ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
-
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(ApiResponse.error(errorCode, message));
+        return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE, message);
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleHandlerMethodValidation(
+    public ResponseEntity<ErrorResponse> handleHandlerMethodValidation(
             HandlerMethodValidationException exception
     ) {
         String message = exception.getParameterValidationResults().stream()
@@ -66,37 +62,47 @@ public class GlobalExceptionHandler {
                 .map(error -> error.getDefaultMessage())
                 .filter(errorMessage -> errorMessage != null)
                 .collect(Collectors.joining(", "));
-        ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
-
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(ApiResponse.error(errorCode, message));
+        return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE, message);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable() {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable() {
         return createErrorResponse(ErrorCode.INVALID_REQUEST);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMethodNotSupported() {
+    public ResponseEntity<ErrorResponse> handleMethodNotSupported() {
         return createErrorResponse(ErrorCode.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMediaTypeNotSupported() {
+    public ResponseEntity<ErrorResponse> handleMediaTypeNotSupported() {
         return createErrorResponse(ErrorCode.UNSUPPORTED_MEDIA_TYPE);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+            IllegalArgumentException exception
+    ) {
+        log.warn("IllegalArgumentException: {}", exception.getMessage());
+        return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE, exception.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleException(Exception exception) {
+    public ResponseEntity<ErrorResponse> handleException(Exception exception) {
         log.error("Unhandled exception", exception);
         return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<ApiResponse<Void>> createErrorResponse(ErrorCode errorCode) {
+    private ResponseEntity<ErrorResponse> createErrorResponse(ErrorCode errorCode) {
         return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(ApiResponse.error(errorCode));
+                .status(errorCode.getStatus())
+                .body(ErrorResponse.of(errorCode));
+    }
+
+    private ResponseEntity<ErrorResponse> createErrorResponse(ErrorCode errorCode, String message) {
+        return ResponseEntity
+                .status(errorCode.getStatus())
+                .body(ErrorResponse.of(errorCode, message));
     }
 }

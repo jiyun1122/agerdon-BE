@@ -12,3 +12,11 @@ spring:
       token:
         secret-key: testSecretKeyMustBeLongEnoughForHmacShaSigning1234567890
         expire-length: 3600000
+
+api:
+  kakao:
+    rest-key: test-kakao-key
+  seoul:
+    metro-key: test-metro-key
+  bus:
+    service-key: test-bus-key

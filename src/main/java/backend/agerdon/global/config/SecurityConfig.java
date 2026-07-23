@@ -1,7 +1,7 @@
 package backend.agerdon.global.config;
 
 import backend.agerdon.global.exception.ErrorCode;
-import backend.agerdon.global.response.ApiResponse;
+import backend.agerdon.global.exception.ErrorResponse;
 import backend.agerdon.global.security.jwt.JwtAuthenticationFilter;
 import backend.agerdon.global.security.jwt.JwtTokenProvider;
 import backend.agerdon.global.security.principal.CustomUserDetailsService;
@@ -99,10 +99,10 @@ public class SecurityConfig {
     }
 
     private void writeErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
-        response.setStatus(errorCode.getHttpStatus().value());
+        response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        objectMapper.writeValue(response.getOutputStream(), ApiResponse.error(errorCode));
+        objectMapper.writeValue(response.getOutputStream(), ErrorResponse.of(errorCode));
     }
 
     // 새 도메인 mutsasession7.store CORS 설정
@@ -115,7 +115,8 @@ public class SecurityConfig {
                 "http://mutsasession7.store",
                 "https://mutsasession7.store",
                 "http://www.mutsasession7.store",
-                "https://www.mutsasession7.store"
+                "https://www.mutsasession7.store",
+                "https://2026-agadon-frontend-two.vercel.app"
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

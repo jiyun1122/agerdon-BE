@@ -26,3 +26,11 @@ management:
   endpoint:
     health:
       show-details: never
+
+api:
+  kakao:
+    rest-key: ${KAKAO_REST_KEY}
+  seoul:
+    metro-key: ${SEOUL_METRO_KEY}
+  bus:
+    service-key: ${BUS_SERVICE_KEY}
